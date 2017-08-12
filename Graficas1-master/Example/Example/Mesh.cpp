@@ -44,7 +44,6 @@ void CMesh::Create(char* t) {
 				}
 			}
 			float x = 0, y = 0, z = 0;
-			float ix = 0, iy = 0, iz = 0;
 			if (currentline == " Mesh mesh_pinata_cerdo_ {")
 			{
 				myfile >> nVertexcount >> separator;
@@ -59,6 +58,7 @@ void CMesh::Create(char* t) {
 					vertices.push_back(V);
 					cout << vertices[i].x << ", " << vertices[i].y << ", " << vertices[i].z << ", " << endl;
 				}
+				float ix = 0, iy = 0, iz = 0;
 				myfile >> nTrianglecount >> separator;
 				cout << nTrianglecount << endl;
 				for (int i = 0; i < nTrianglecount; i++)
@@ -67,6 +67,20 @@ void CMesh::Create(char* t) {
 					indices.push_back(ix);
 					indices.push_back(iy);
 					indices.push_back(iz);
+				}
+			}
+			float nx = 0, ny = 0, nz = 0;
+			if (currentline ==  "  MeshNormals normals {")
+			{
+				myfile >> nNormalcount >> separator;
+				cout << nNormalcount << endl;
+				for (int i = 0; i < nNormalcount; i++)
+				{
+					myfile >> nx >> separator >> ny >> separator >> nz >> separator >> separator;
+					vertices[i].nx = nx;
+					vertices[i].ny = ny;
+					vertices[i].nz = nz;
+					cout << vertices[i].nx << ", " << vertices[i].ny << ", " << vertices[i].nz << ", " << endl;
 				}
 			}
 			//cout << currentline << '\n';
@@ -205,15 +219,15 @@ void CMesh::Draw(float *t, float *vp) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
 
 	glEnableVertexAttribArray(vertexAttribLoc);
-	//glEnableVertexAttribArray(normalAttribLoc);
+	glEnableVertexAttribArray(normalAttribLoc);
 
-	/*if (uvAttribLoc != -1)
+	if (uvAttribLoc != -1)
 		glEnableVertexAttribArray(uvAttribLoc);
-*/
+
 	glVertexAttribPointer(vertexAttribLoc, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(0));
-	//glVertexAttribPointer(normalAttribLoc, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(16));
+	glVertexAttribPointer(normalAttribLoc, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(16));
 																		 
-	/*if (uvAttribLoc != -1)												 
+/*	if (uvAttribLoc != -1)												 
 		glVertexAttribPointer(uvAttribLoc, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(32));
 */
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
@@ -222,7 +236,7 @@ void CMesh::Draw(float *t, float *vp) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	glDisableVertexAttribArray(vertexAttribLoc);
-	//glDisableVertexAttribArray(normalAttribLoc);
+	glDisableVertexAttribArray(normalAttribLoc);
 
 	/*if (uvAttribLoc != -1) {
 		glDisableVertexAttribArray(uvAttribLoc);

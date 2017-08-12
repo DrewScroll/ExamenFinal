@@ -19,8 +19,8 @@ struct MeshVertex {
 	MeshVertex() : x(0.0f), y(0.0f), z(0.0f), w(1.0f)
 	{}
 	float x, y, z, w;
-	/*float nx, ny, nz, nw;
-	float s, t;*/
+	float nx, ny, nz, nw;
+	float s, t;
 
 };
 
@@ -30,6 +30,7 @@ public:
 	char separator;
 	int nVertexcount;
 	int nTrianglecount;
+	int nNormalcount;
 	int n_temp;
 	CMesh() : shaderID(0) {}
 	void Create() {};
