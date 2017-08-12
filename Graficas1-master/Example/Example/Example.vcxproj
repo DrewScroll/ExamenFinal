@@ -19,12 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Graficas1\Graficas1\Matrix4D.h" />
     <ClInclude Include="BaseDriver.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="CubeGL.h" />
     <ClInclude Include="GLDriver.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Matrix4D.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="PrimitiveBase.h" />
     <ClInclude Include="PrimitiveInstance.h" />
@@ -35,11 +35,11 @@
     <ClInclude Include="Win32Framework.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Graficas1\Graficas1\Matrix4D.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="CubeGL.cpp" />
     <ClCompile Include="GLDriver.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Matrix4D.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PrimitiveInstance.cpp" />
     <ClCompile Include="PrimitiveManager.cpp" />

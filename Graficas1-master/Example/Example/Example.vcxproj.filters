@@ -47,10 +47,10 @@
     <ClInclude Include="PrimitiveInstance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Graficas1\Graficas1\Matrix4D.h">
+    <ClInclude Include="Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
+    <ClInclude Include="Matrix4D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -85,10 +85,10 @@
     <ClCompile Include="PrimitiveInstance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Graficas1\Graficas1\Matrix4D.cpp">
+    <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
+    <ClCompile Include="Matrix4D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

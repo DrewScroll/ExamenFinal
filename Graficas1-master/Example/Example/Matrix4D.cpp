@@ -210,10 +210,10 @@ MATRIX4D LookAtRH(VECTOR4D & EyePos, VECTOR4D & Target, VECTOR4D & Up)
 	zDir = Normalize(EyePos - Target);
 	xDir = Normalize(Cross3(Up, zDir));
 	yDir = Cross3(zDir, xDir);
-	MATRIX4D View = { xDir.x,				yDir.x,				zDir.x,		 0,
-		xDir.y,				yDir.y,				zDir.y,		 0,
-		xDir.z,				yDir.z,				zDir.z,		 0,
-		-Dot(xDir,EyePos), -Dot(yDir, EyePos), -Dot(zDir, EyePos), 1 };
+	MATRIX4D View = {	 xDir.x,			  yDir.x,			  zDir.x,		 0,
+						 xDir.y,			  yDir.y,			  zDir.y,		 0,
+						 xDir.z,			  yDir.z,			  zDir.z,		 0,
+					-Dot(xDir,EyePos), -Dot(yDir, EyePos), -Dot(zDir, EyePos),   1 };
 	return View;
 }
 
@@ -250,8 +250,10 @@ MATRIX4D OrthoLH(float width, float height, float zNear, float zFar)
 
 MATRIX4D PerspectiveFOVRH(float FOVY, float ratio, float zNear, float zFar)
 {
-	float h = 1 / tan(FOVY / 2);
-	float w = h*ratio;
+	float ang = FOVY / 2;
+
+	float h = cos(ang) / sin(ang);
+	float w = h / ratio;
 	MATRIX4D P = { w,	0,				 0,				 0,
 				   0,	h,				 0,				 0,
 				   0,	0,	   zFar / (zNear - zFar),   -1,
@@ -261,8 +263,10 @@ MATRIX4D PerspectiveFOVRH(float FOVY, float ratio, float zNear, float zFar)
 
 MATRIX4D PerspectiveFOVLH(float FOVY, float ratio, float zNear, float zFar)
 {
-	float h = 1 / tan(FOVY / 2);
-	float w = h*ratio;
+	float ang = FOVY / 2;
+
+	float h = cos(ang) / sin(ang);
+	float w = h / ratio;
 	MATRIX4D P = { w,	0,				  0,				0,
 				   0,	h,				  0,				0,
 				   0,	0,		zFar / (zFar - zNear),		1,
@@ -400,3 +404,12 @@ float Inverse(MATRIX4D & M, MATRIX4D & R)
 
 	return (float)det;
 }
+
+//MATRIX4D &MATRIX4D::operator=(float * t)
+//{
+//	for (int i = 0; i < 16; i++)
+//	{
+//		this->v[i] = t[i];
+//	}
+//	return *this;
+//}
