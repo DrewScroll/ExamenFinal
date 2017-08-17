@@ -34,7 +34,11 @@ void CMesh::Create(char* t) {
 				cout << currentline << '\n';
 
 			}
-			if (currentline == " FrameTransformMatrix relative {")
+			int MatrizRelativo = currentline.find("FrameTransformMatrix relative");
+			int findMesh = currentline.find("Mesh mesh");
+			int findNormals = currentline.find("MeshNormals normals");
+			int findTexture = currentline.find("MeshTextureCoords tc0");
+			/*if (MatrizRelativo != -1)
 			{
 				cout << currentline << '\n';
 				for (int i = 0; i < 16; i++)
@@ -42,13 +46,13 @@ void CMesh::Create(char* t) {
 					myfile >> FTM[i] >> separator;
 					cout << FTM[i] << endl;
 				}
-			}
+			}*/
 			float x = 0, y = 0, z = 0;
-			if (currentline == " Mesh mesh_pinata_cerdo_ {")
+			if (findMesh != -1)
 			{
 				myfile >> nVertexcount >> separator;
 				cout << nVertexcount << endl;
-				for (int i = 0; i < nVertexcount; i++)
+				for (int i = 0; i < nVertexcount1 + nVertexcount; i++)
 				{
 					MeshVertex V;
 					myfile >> x >> separator >> y >> separator >> z >> separator >> separator;
@@ -56,32 +60,45 @@ void CMesh::Create(char* t) {
 					V.y = y;
 					V.z = z;
 					vertices.push_back(V);
-					cout << vertices[i].x << ", " << vertices[i].y << ", " << vertices[i].z << ", " << endl;
 				}
+				nVertexcount1 += nVertexcount;
 				float ix = 0, iy = 0, iz = 0;
 				myfile >> nTrianglecount >> separator;
 				cout << nTrianglecount << endl;
-				for (int i = 0; i < nTrianglecount; i++)
+				for (int i = 0; i < nTrianglecount1 + nTrianglecount; i++)
 				{
 					myfile >> n_temp >> separator >> ix >> separator >> iy >> separator >> iz >> separator >> separator;
-					indices.push_back(ix);
-					indices.push_back(iy);
-					indices.push_back(iz);
+					indices.push_back(ix + nTrianglecount1);
+					indices.push_back(iy + nTrianglecount1);
+					indices.push_back(iz + nTrianglecount1);
 				}
+				nTrianglecount1 += nTrianglecount;
 			}
 			float nx = 0, ny = 0, nz = 0;
-			if (currentline ==  "  MeshNormals normals {")
+			if (findNormals != -1)
 			{
 				myfile >> nNormalcount >> separator;
 				cout << nNormalcount << endl;
-				for (int i = 0; i < nNormalcount; i++)
+				for (int i = 0; i < nNormalcount1 + nNormalcount; i++)
 				{
 					myfile >> nx >> separator >> ny >> separator >> nz >> separator >> separator;
 					vertices[i].nx = nx;
 					vertices[i].ny = ny;
 					vertices[i].nz = nz;
-					cout << vertices[i].nx << ", " << vertices[i].ny << ", " << vertices[i].nz << ", " << endl;
 				}
+				nNormalcount1 += nNormalcount;
+			}
+			float ts = 0, tt = 0;
+			if (findTexture != -1)
+			{
+				myfile >> nTexturecount >> separator;
+				for (int i = 0; i < nTexturecount1 + nTexturecount; i++)
+				{
+					myfile >> ts >> separator >> tt >> separator >> separator;
+					vertices[i].s = ts;
+					vertices[i].t = tt;
+				}
+				nTexturecount1 += nTexturecount;
 			}
 			//cout << currentline << '\n';
 		}

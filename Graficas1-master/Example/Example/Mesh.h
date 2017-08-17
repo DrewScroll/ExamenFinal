@@ -29,8 +29,13 @@ public:
 	float FTM[16];
 	char separator;
 	int nVertexcount;
+	int nVertexcount1 = 0;
 	int nTrianglecount;
+	int nTrianglecount1 = 0;
 	int nNormalcount;
+	int nNormalcount1 = 0;
+	int nTexturecount;
+	int nTexturecount1 = 0;
 	int n_temp;
 	CMesh() : shaderID(0) {}
 	void Create() {};

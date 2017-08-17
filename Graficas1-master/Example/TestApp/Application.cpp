@@ -22,7 +22,7 @@ void TestApp::CreateAssets() {
 	//Cubes[1].CreateInstance(PrimitiveMgr.GetPrimitive(indexCube), &VP);
 
 	//int indexTri = PrimitiveMgr.CreateCube();
-	int indexMesh = PrimitiveMgr.CreateMesh("CerdoNuevo.X");
+	int indexMesh = PrimitiveMgr.CreateMesh("NuBatman.X");
 	//Triangle[0].CreateInstance(PrimitiveMgr.GetPrimitive(indexTri), &VP);
 
 	Mesh[0].CreateInstance(PrimitiveMgr.GetPrimitive(indexMesh), &VP);
