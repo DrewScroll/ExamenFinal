@@ -40,12 +40,12 @@ void CMesh::Create(char* t) {
 			int findTexture = currentline.find("MeshTextureCoords tc0");
 			/*if (MatrizRelativo != -1)
 			{
-				cout << currentline << '\n';
-				for (int i = 0; i < 16; i++)
-				{
-					myfile >> FTM[i] >> separator;
-					cout << FTM[i] << endl;
-				}
+			cout << currentline << '\n';
+			for (int i = 0; i < 16; i++)
+			{
+			myfile >> FTM[i] >> separator;
+			cout << FTM[i] << endl;
+			}
 			}*/
 			float x = 0, y = 0, z = 0;
 			if (findMesh != -1)
@@ -243,10 +243,10 @@ void CMesh::Draw(float *t, float *vp) {
 
 	glVertexAttribPointer(vertexAttribLoc, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(0));
 	glVertexAttribPointer(normalAttribLoc, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(16));
-																		 
-/*	if (uvAttribLoc != -1)												 
-		glVertexAttribPointer(uvAttribLoc, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(32));
-*/
+
+	/*	if (uvAttribLoc != -1)
+	glVertexAttribPointer(uvAttribLoc, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(32));
+	*/
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -256,7 +256,7 @@ void CMesh::Draw(float *t, float *vp) {
 	glDisableVertexAttribArray(normalAttribLoc);
 
 	/*if (uvAttribLoc != -1) {
-		glDisableVertexAttribArray(uvAttribLoc);
+	glDisableVertexAttribArray(uvAttribLoc);
 	}*/
 
 	glUseProgram(0);
