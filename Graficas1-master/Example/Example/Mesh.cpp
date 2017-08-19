@@ -34,6 +34,7 @@ void CMesh::Create(char* t) {
 				cout << currentline << '\n';
 
 			}
+			
 			int MatrizRelativo = currentline.find("FrameTransformMatrix relative");
 			int findMesh = currentline.find("Mesh mesh");
 			int findNormals = currentline.find("MeshNormals normals");
@@ -47,58 +48,47 @@ void CMesh::Create(char* t) {
 			cout << FTM[i] << endl;
 			}
 			}*/
-			float x = 0, y = 0, z = 0;
 			if (findMesh != -1)
 			{
-				myfile >> nVertexcount >> separator;
-				cout << nVertexcount << endl;
-				for (int i = 0; i < nVertexcount1 + nVertexcount; i++)
+				XMesh = new ContMesh;
+				myfile >> XMesh->vert >> separator;
+				cout << "vertices: "<< XMesh->vert << endl;
+				XMesh->vertices = new MeshVertex[XMesh->vert];
+				for (int i = 0; i < XMesh->vert; i++)
 				{
-					MeshVertex V;
-					myfile >> x >> separator >> y >> separator >> z >> separator >> separator;
-					V.x = x;
-					V.y = y;
-					V.z = z;
-					vertices.push_back(V);
+					myfile >> XMesh->vertices[i].x >> separator >> XMesh->vertices[i].y >> separator >> XMesh->vertices[i].z >> separator >> separator;
+					//vertices.push_back(V);
 				}
-				nVertexcount1 += nVertexcount;
-				float ix = 0, iy = 0, iz = 0;
-				myfile >> nTrianglecount >> separator;
-				cout << nTrianglecount << endl;
-				for (int i = 0; i < nTrianglecount1 + nTrianglecount; i++)
+				myfile >> XMesh->ind >> separator;
+				cout <<"indices: "<< XMesh->ind << endl;
+				XMesh->indices = new unsigned short[XMesh->ind*3];
+				for (int i = 0; i < XMesh->ind * 3; i++)
 				{
-					myfile >> n_temp >> separator >> ix >> separator >> iy >> separator >> iz >> separator >> separator;
-					indices.push_back(ix + nTrianglecount1);
-					indices.push_back(iy + nTrianglecount1);
-					indices.push_back(iz + nTrianglecount1);
+					myfile >> separator >> separator >> XMesh->indices[i] >> separator;
+					i++;
+					myfile >> XMesh->indices[i] >> separator;
+					i++;
+					myfile >> XMesh->indices[i] >> separator >> separator;
 				}
-				nTrianglecount1 += nTrianglecount;
 			}
-			float nx = 0, ny = 0, nz = 0;
 			if (findNormals != -1)
 			{
-				myfile >> nNormalcount >> separator;
-				cout << nNormalcount << endl;
-				for (int i = 0; i < nNormalcount1 + nNormalcount; i++)
+				myfile >> XMesh->vert >> separator;
+				cout <<"normals vertices: "<< XMesh->vert << endl;
+				for (int i = 0; i < XMesh->vert; i++)
 				{
-					myfile >> nx >> separator >> ny >> separator >> nz >> separator >> separator;
-					vertices[i].nx = nx;
-					vertices[i].ny = ny;
-					vertices[i].nz = nz;
+					myfile >> XMesh->vertices[i].nx >> separator >> XMesh->vertices[i].ny >> separator >> XMesh->vertices[i].nz >> separator >> separator;
 				}
-				nNormalcount1 += nNormalcount;
 			}
-			float ts = 0, tt = 0;
 			if (findTexture != -1)
 			{
-				myfile >> nTexturecount >> separator;
-				for (int i = 0; i < nTexturecount1 + nTexturecount; i++)
+				myfile >> XMesh->vert >> separator;
+				cout << "texture vertices: " << XMesh->vert;
+				for (int i = 0; i < XMesh->vert; i++)
 				{
-					myfile >> ts >> separator >> tt >> separator >> separator;
-					vertices[i].s = ts;
-					vertices[i].t = tt;
+					myfile >> XMesh->vertices[i].s >> separator >> XMesh->vertices[i].t >> separator >> separator;
 				}
-				nTexturecount1 += nTexturecount;
+				Meshes.push_back(XMesh);
 			}
 			//cout << currentline << '\n';
 		}
@@ -193,16 +183,18 @@ void CMesh::Create(char* t) {
 	//indices[34] = 22;
 	//indices[35] = 23;
 
-	glGenBuffers(1, &VB);
-	glBindBuffer(GL_ARRAY_BUFFER, VB);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(MeshVertex), &vertices[0], GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	for (int i = 0; i < Meshes.size(); i++)
+	{
+		glGenBuffers(1, &Meshes[i]->VB);
+		glBindBuffer(GL_ARRAY_BUFFER, Meshes[i]->VB);
+		glBufferData(GL_ARRAY_BUFFER, Meshes[i]->vert * sizeof(MeshVertex), Meshes[i]->vertices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &IB);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0], GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
+		glGenBuffers(1, &Meshes[i]->IB);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Meshes[i]->IB);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, (Meshes[i]->ind * 3) * sizeof(unsigned short), Meshes[i]->indices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
 	transform = Identity();
 }
 
@@ -231,34 +223,36 @@ void CMesh::Draw(float *t, float *vp) {
 
 	glUniformMatrix4fv(matWorldUniformLoc, 1, GL_FALSE, &transform.m[0][0]);
 	glUniformMatrix4fv(matWorldViewProjUniformLoc, 1, GL_FALSE, &WVP.m[0][0]);
+	
+	for (int i = 0; i < Meshes.size(); i++)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, Meshes[i]->VB);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Meshes[i]->IB);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VB);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
+		glEnableVertexAttribArray(vertexAttribLoc);
+		glEnableVertexAttribArray(normalAttribLoc);
 
-	glEnableVertexAttribArray(vertexAttribLoc);
-	glEnableVertexAttribArray(normalAttribLoc);
+		if (uvAttribLoc != -1)
+			glEnableVertexAttribArray(uvAttribLoc);
 
-	if (uvAttribLoc != -1)
-		glEnableVertexAttribArray(uvAttribLoc);
+		glVertexAttribPointer(vertexAttribLoc, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(0));
+		glVertexAttribPointer(normalAttribLoc, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(16));
 
-	glVertexAttribPointer(vertexAttribLoc, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(0));
-	glVertexAttribPointer(normalAttribLoc, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(16));
+		/*	if (uvAttribLoc != -1)
+		glVertexAttribPointer(uvAttribLoc, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(32));
+		*/
+		glDrawElements(GL_TRIANGLES, Meshes[i]->ind * 3 , GL_UNSIGNED_SHORT, 0);
 
-	/*	if (uvAttribLoc != -1)
-	glVertexAttribPointer(uvAttribLoc, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(32));
-	*/
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glDisableVertexAttribArray(vertexAttribLoc);
+		glDisableVertexAttribArray(normalAttribLoc);
 
-	glDisableVertexAttribArray(vertexAttribLoc);
-	glDisableVertexAttribArray(normalAttribLoc);
-
-	/*if (uvAttribLoc != -1) {
-	glDisableVertexAttribArray(uvAttribLoc);
-	}*/
-
+		/*if (uvAttribLoc != -1) {
+		glDisableVertexAttribArray(uvAttribLoc);
+		}*/
+	}
 	glUseProgram(0);
 }
 

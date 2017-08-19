@@ -16,7 +16,7 @@
 using namespace std;
 
 struct MeshVertex {
-	MeshVertex() : x(0.0f), y(0.0f), z(0.0f), w(1.0f)
+	MeshVertex() : w(1.0f), nw(1.0f)
 	{}
 	float x, y, z, w;
 	float nx, ny, nz, nw;
@@ -24,19 +24,19 @@ struct MeshVertex {
 
 };
 
+struct ContMesh
+{
+	MeshVertex *vertices;
+	unsigned short	*indices;
+	GLuint			VB;
+	GLuint			IB;
+	int vert, ind;
+};
+
 class CMesh : public PrimitiveBase {
 public:
 	float FTM[16];
 	char separator;
-	int nVertexcount;
-	int nVertexcount1 = 0;
-	int nTrianglecount;
-	int nTrianglecount1 = 0;
-	int nNormalcount;
-	int nNormalcount1 = 0;
-	int nTexturecount;
-	int nTexturecount1 = 0;
-	int n_temp;
 	CMesh() : shaderID(0) {}
 	void Create() {};
 	void Create(char * t);
@@ -52,11 +52,13 @@ public:
 
 	GLint  matWorldViewProjUniformLoc;
 	GLint  matWorldUniformLoc;
+	ContMesh	*XMesh;
+	vector <ContMesh*> Meshes;
 
-	vector <MeshVertex> vertices;
+	/*vector <MeshVertex> vertices;
 	vector <unsigned short>	indices;
 	GLuint			VB;
-	GLuint			IB;
+	GLuint			IB;*/
 
 	MATRIX4D	transform;
 };
