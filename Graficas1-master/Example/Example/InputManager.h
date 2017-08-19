@@ -18,7 +18,8 @@ public:
 	
 	bool	KeyStates[2][MAXKEYS];
 	bool	MouseButtonStates[2][MAXMOUSEBUTTONS];
-
+	int Deltax;
+	int Deltay;
 };
 
 #endif

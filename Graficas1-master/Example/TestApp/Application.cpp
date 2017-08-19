@@ -7,12 +7,24 @@ using namespace std;
 
 void TestApp::InitVars() {
 	DtTimer.Init();
+	DtTimer.Update();
+	srand((unsigned int)DtTimer.GetDTSecs());
 	//Position	= D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	//Orientation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	//Scaling		= D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 	Position = { 0,0,0,0 };
 	Orientation = { 0,0,0,0 };
 	Scaling = { 1,1,1,0 };
+	Camara.Init(VECTOR4D{ 0.0f,1.0f,10.0f,0.0f }, 45 * (M_PI / 180), 1280.0f / 720.0f, 1.0f, 8000.0f);
+	Camara.Speed = 10.0f;
+	Camara.Eye = VECTOR4D{ 0.0f, 9.75f, -31.0f, 0.0f };
+	Camara.Pitch = 0.14f;
+	Camara.Roll = 0.0f;
+	Camara.Yaw = 0.020f;
+	Camara.Update(0.0f);
+
+	CamaraActiva = &Camara;
+	FirstFrame = true;
 }
 
 void TestApp::CreateAssets() {
@@ -34,17 +46,15 @@ void TestApp::CreateAssets() {
 	D3DXMatrixLookAtRH(&View,&Pos,&LookAt,&Up);
 	D3DXMATRIX Proj;*/
 
-	MATRIX4D View;
-
-	VECTOR4D Pos = { 0,1,5,0 };
+	VECTOR4D Pos = { 0,1,-5,0 };
 	VECTOR4D Up = { 0,1,0,0 };
 	VECTOR4D LookAt = { 0.0001,0.0001,0.0001,0 };
-	View = LookAtRH(Pos, LookAt, Up);
-	MATRIX4D Proj = PerspectiveFOVRH((M_PI / 4), (1280.0f / 720.0f), 0.1, 1000);
+	Camara.View = LookAtRH(Pos, LookAt, Up);
+	Camara.Projection = PerspectiveFOVRH((M_PI / 4), (1280.0f / 720.0f), 0.1, 8000);
 
 	//D3DXMatrixPerspectiveFovRH(&Proj,D3DXToRadian(45.0f),1280.0f/720.0f,0.1f,1000.0f);
 	//	D3DXMatrixOrthoRH(&Proj, 1280.0f / 720.0f, 1.0f , 0.1, 100.0f);
-	VP = View*Proj;
+	Camara.VP = Camara.View*Camara.Projection;
 }
 
 void TestApp::DestroyAssets() {
@@ -53,7 +63,10 @@ void TestApp::DestroyAssets() {
 
 void TestApp::OnUpdate() {
 	DtTimer.Update();
-
+	Dtsecs = DtTimer.GetDTSecs();
+	OnInput();
+	CamaraActiva->Update(Dtsecs);
+	VP = CamaraActiva->VP;
 	/*Triangle[0].TranslateAbsolute(Position.x, Position.y, Position.z);
 	Triangle[0].RotateXAbsolute(Orientation.x);
 	Triangle[0].RotateYAbsolute(Orientation.y);
@@ -68,7 +81,7 @@ void TestApp::OnUpdate() {
 	Mesh[0].ScaleAbsolute(Scaling.x);
 	Mesh[0].Update();
 
-	OnInput();
+	
 
 	/*
 	Cubes[0].TranslateAbsolute(Position.x, Position.y, Position.z);
@@ -85,6 +98,18 @@ void TestApp::OnUpdate() {
 	Cubes[1].ScaleAbsolute(Scaling.x);
 	Cubes[1].Update();
 	*/
+	float speed = 0.5f;
+	static float freq = 0.0f;
+	freq += Dtsecs*speed;
+	static float freq2 = M_PI / 2.0f;
+	freq2 += Dtsecs*speed;
+	PrimitiveInst *Sel = &Mesh[5];
+	Sel->TranslateAbsolute(Position.x, Position.y, Position.z);
+	Sel->RotateXAbsolute(Orientation.x);
+	Sel->RotateYAbsolute(Orientation.y);
+	Sel->RotateZAbsolute(Orientation.z);
+	Sel->ScaleAbsolute(Scaling.x);
+	Sel->Update();
 	OnDraw();
 }
 
@@ -93,32 +118,44 @@ void TestApp::OnDraw() {
 	//Triangle[0].Draw();
 	Mesh[0].Draw();
 	pFramework->pVideoDriver->SwapBuffers();
+	FirstFrame = false;
 }
 
 void TestApp::OnInput() {
-	
+	if (FirstFrame)
+	{
+		return;
+	}
+	bool cambio = false;
+	const float vel = 10.0f;
 	if (IManager.PressedKey(SDLK_UP)) {
-		Position.y += 1.0f*DtTimer.GetDTSecs();
+		Position.y += 1.0f*vel*Dtsecs;
+		cambio = true;
 	}
 
 	if (IManager.PressedKey(SDLK_DOWN)) {
-		Position.y -= 1.0f*DtTimer.GetDTSecs();
+		Position.y -= 1.0f*vel*Dtsecs;
+		cambio = true;
 	}
 
 	if (IManager.PressedKey(SDLK_LEFT)) {
-		Position.x -= 1.0f*DtTimer.GetDTSecs();
+		Position.x -= 1.0f*vel*Dtsecs;
+		cambio = true;
 	}
 
 	if (IManager.PressedKey(SDLK_RIGHT)) {
-		Position.x += 1.0f*DtTimer.GetDTSecs();
+		Position.x += 1.0f*vel*Dtsecs;
+		cambio = true;
 	}
 
 	if (IManager.PressedKey(SDLK_z)) {
-		Position.z -= 1.0f*DtTimer.GetDTSecs();
+		Position.z -= 1.0f*vel*Dtsecs;
+		cambio = true;
 	}
 
 	if (IManager.PressedKey(SDLK_x)) {
-		Position.z += 1.0f*DtTimer.GetDTSecs();
+		Position.z += 1.0f*vel*Dtsecs;
+		cambio = true;
 	}
 
 	if (IManager.PressedKey(SDLK_KP_PLUS)) {
@@ -134,30 +171,54 @@ void TestApp::OnInput() {
 	}
 
 	if (IManager.PressedKey(SDLK_KP5)) {
-		Orientation.x -= 60.0f*DtTimer.GetDTSecs();
+		Orientation.x -= 60.0f*vel*Dtsecs;
+		cambio = true;
 	}
 
 	if (IManager.PressedKey(SDLK_KP6)) {
-		Orientation.x += 60.0f*DtTimer.GetDTSecs();
+		Orientation.x += 60.0f*vel*Dtsecs;
+		cambio = true;
 	}
 
 	if (IManager.PressedKey(SDLK_KP2)) {
-		Orientation.y -= 60.0f*DtTimer.GetDTSecs();
+		Orientation.y -= 60.0f*vel*Dtsecs;
+		cambio = true;
 	}
 
 	if (IManager.PressedKey(SDLK_KP3)) {
-		Orientation.y += 60.0f*DtTimer.GetDTSecs();
+		Orientation.y += 60.0f*vel*Dtsecs;
+		cambio = true;
 	}
 
 	if (IManager.PressedKey(SDLK_KP0)) {
-		Orientation.z -= 60.0f*DtTimer.GetDTSecs();
+		Orientation.z -= 60.0f*vel*Dtsecs;
+		cambio = true;
 	}
 
 	if (IManager.PressedKey(SDLK_KP_PERIOD)) {
-		Orientation.z += 60.0f*DtTimer.GetDTSecs();
+		Orientation.z += 60.0f*vel*Dtsecs;
+		cambio = true;
 	}
-
-	
+	if (IManager.PressedKey(SDLK_w))
+	{
+		CamaraActiva->MoveForward(Dtsecs);
+	}
+	if (IManager.PressedKey(SDLK_s))
+	{
+		CamaraActiva->MoveBackward(Dtsecs);
+	}
+	if (IManager.PressedKey(SDLK_a))
+	{
+		CamaraActiva->StrafeLeft(Dtsecs);
+	}
+	if (IManager.PressedKey(SDLK_d))
+	{
+		CamaraActiva->StrafeRight(Dtsecs);
+	}
+	float yaw = 0.005f *static_cast<float>(IManager.Deltax);
+	CamaraActiva->MoveYaw(yaw);
+	float pitch = 0.005f*static_cast<float>(IManager.Deltay);
+	CamaraActiva->MovePitch(pitch);
 }
 
 void TestApp::OnPause() {

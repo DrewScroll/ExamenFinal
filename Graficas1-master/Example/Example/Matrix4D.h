@@ -70,3 +70,5 @@ MATRIX4D OrthoLH(float width, float height, float zNear, float zFar);
 MATRIX4D PerspectiveFOVRH(float FOVY, float ratio, float zNear, float zFar);
 MATRIX4D PerspectiveFOVLH(float FOVY, float ratio, float zNear, float zFar);
 float Inverse(MATRIX4D & M, MATRIX4D & R);
+VECTOR4D TransformNormalLH(const VECTOR4D& v,const MATRIX4D& M);
+VECTOR4D TransformNormalRH(const VECTOR4D& v,const MATRIX4D& M);

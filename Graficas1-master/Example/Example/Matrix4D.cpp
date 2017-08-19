@@ -2,6 +2,8 @@
 #include <string.h>
 #include <math.h>
 
+#define M_PI 3.141592654
+
 MATRIX4D Zero()
 {
 	MATRIX4D Z;
@@ -403,6 +405,23 @@ float Inverse(MATRIX4D & M, MATRIX4D & R)
 		R.v[i] = (float)(inv[i] * invdet);
 
 	return (float)det;
+}
+
+VECTOR4D TransformNormalLH(const VECTOR4D &v, const MATRIX4D &mat) {
+	VECTOR4D vpout;
+	vpout.x = v.x*mat.m[0][0] + v.y*mat.m[1][0] + v.z*mat.m[2][0];
+	vpout.y = v.x*mat.m[0][1] + v.y*mat.m[1][1] + v.z*mat.m[2][1];
+	vpout.z = v.x*mat.m[0][2] + v.y*mat.m[1][2] + v.z*mat.m[2][2];
+	vpout.w = 1.0f;
+	return vpout;
+}
+VECTOR4D TransformNormalRH(const VECTOR4D &v, const MATRIX4D &mat) {
+	VECTOR4D vpout;
+	vpout.x = v.x*mat.m[0][0] + v.y*mat.m[0][1] + v.z*mat.m[0][2];
+	vpout.y = v.x*mat.m[1][0] + v.y*mat.m[1][1] + v.z*mat.m[1][2];
+	vpout.z = v.x*mat.m[2][0] + v.y*mat.m[2][1] + v.z*mat.m[2][2];
+	vpout.w = 1.0f;
+	return vpout;
 }
 
 //MATRIX4D &MATRIX4D::operator=(float * t)

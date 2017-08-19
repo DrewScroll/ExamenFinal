@@ -4,6 +4,7 @@
 
 #include <d3dx9math.h>
 #include <Timer.h>
+#include "CCamara.h"
 
 class TestApp : public AppBase {
 public:
@@ -26,6 +27,10 @@ public:
 	PrimitiveInst	Triangle[10];
 	PrimitiveInst Mesh[10];
 
+	CCamara Camara;
+	CCamara *CamaraActiva;
+	CCamara LuzCamara;
+	
 	//D3DXVECTOR3		Position;
 	//D3DXVECTOR3		Orientation;
 	//D3DXVECTOR3		Scaling;
@@ -44,5 +49,8 @@ public:
 	MATRIX4D Projection;
 	MATRIX4D VP;
 
-	Timer			DtTimer;
+	bool	FirstFrame;
+	Timer	DtTimer;
+	float Dtsecs;
+	int CamSelection;
 };
