@@ -24,13 +24,19 @@ struct MeshVertex {
 
 };
 
+struct Material {
+	GLuint IB;
+	bool diffusemap;
+	string diffusepath;
+};
+
 struct ContMesh
 {
 	MeshVertex *vertices;
 	unsigned short	*indices;
 	GLuint			VB;
 	GLuint			IB;
-	int vert, ind;
+	int vert, ind, mat;
 };
 
 class CMesh : public PrimitiveBase {
@@ -53,7 +59,9 @@ public:
 	GLint  matWorldViewProjUniformLoc;
 	GLint  matWorldUniformLoc;
 	ContMesh	*XMesh;
+	Material *XMaterial;
 	vector <ContMesh*> Meshes;
+	vector <Material*> materials;
 
 	/*vector <MeshVertex> vertices;
 	vector <unsigned short>	indices;

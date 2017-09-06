@@ -39,6 +39,8 @@ void CMesh::Create(char* t) {
 			int findMesh = currentline.find("Mesh mesh");
 			int findNormals = currentline.find("MeshNormals normals");
 			int findTexture = currentline.find("MeshTextureCoords tc0");
+			int findMaterialList = currentline.find("MeshMaterialList mtls");
+			int findDiffuseMap = currentline.find("diffuseMap");
 			/*if (MatrizRelativo != -1)
 			{
 			cout << currentline << '\n';
@@ -51,6 +53,7 @@ void CMesh::Create(char* t) {
 			if (findMesh != -1)
 			{
 				XMesh = new ContMesh;
+				XMaterial = new Material;
 				myfile >> XMesh->vert >> separator;
 				cout << "vertices: "<< XMesh->vert << endl;
 				XMesh->vertices = new MeshVertex[XMesh->vert];
@@ -87,6 +90,28 @@ void CMesh::Create(char* t) {
 				for (int i = 0; i < XMesh->vert; i++)
 				{
 					myfile >> XMesh->vertices[i].s >> separator >> XMesh->vertices[i].t >> separator >> separator;
+				}
+			}
+			if (findMaterialList != -1)
+			{
+				bool test;
+				myfile >> separator >> separator;
+				myfile >> XMesh->mat >> separator;
+				for (int i = 0; i < XMesh->mat; i++)
+				{
+					myfile >> XMaterial->diffusemap >> separator;
+					materials.push_back(XMaterial);
+				}
+			}
+			if (findDiffuseMap != -1)
+			{
+				string str;
+				myfile >> separator >> str;
+				string str1 = str.substr(0,4);
+				string str2 = str.substr(5, (str.length() - 7));
+				for (int i = 0; i < XMesh->mat; i++)
+				{
+					materials[i]->diffusepath = str1 + str2;
 				}
 				Meshes.push_back(XMesh);
 			}

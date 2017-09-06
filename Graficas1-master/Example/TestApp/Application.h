@@ -27,9 +27,9 @@ public:
 	PrimitiveInst	Triangle[10];
 	PrimitiveInst Mesh[10];
 
-	CCamara Camara;
+	/*CCamara Camara;
 	CCamara *CamaraActiva;
-	CCamara LuzCamara;
+	CCamara LuzCamara;*/
 	
 	//D3DXVECTOR3		Position;
 	//D3DXVECTOR3		Orientation;

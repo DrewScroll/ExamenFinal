@@ -15,7 +15,7 @@ void TestApp::InitVars() {
 	Position = { 0,0,0,0 };
 	Orientation = { 0,0,0,0 };
 	Scaling = { 1,1,1,0 };
-	Camara.Init(VECTOR4D{ 0.0f,1.0f,10.0f,0.0f }, 45 * (M_PI / 180), 1280.0f / 720.0f, 1.0f, 8000.0f);
+	/*Camara.Init(VECTOR4D{ 0.0f,1.0f,10.0f,0.0f }, 45 * (M_PI / 180), 1280.0f / 720.0f, 1.0f, 8000.0f);
 	Camara.Speed = 10.0f;
 	Camara.Eye = VECTOR4D{ 0.0f, 9.75f, -31.0f, 0.0f };
 	Camara.Pitch = 0.14f;
@@ -23,7 +23,7 @@ void TestApp::InitVars() {
 	Camara.Yaw = 0.020f;
 	Camara.Update(0.0f);
 
-	CamaraActiva = &Camara;
+	CamaraActiva = &Camara;*/
 	FirstFrame = true;
 }
 
@@ -49,12 +49,12 @@ void TestApp::CreateAssets() {
 	VECTOR4D Pos = { 0,1,-5,0 };
 	VECTOR4D Up = { 0,1,0,0 };
 	VECTOR4D LookAt = { 0.0001,0.0001,0.0001,0 };
-	Camara.View = LookAtRH(Pos, LookAt, Up);
-	Camara.Projection = PerspectiveFOVRH((M_PI / 4), (1280.0f / 720.0f), 0.1, 8000);
+	View = LookAtRH(Pos, LookAt, Up);
+	Projection = PerspectiveFOVRH((M_PI / 4), (1280.0f / 720.0f), 0.1, 8000);
 
 	//D3DXMatrixPerspectiveFovRH(&Proj,D3DXToRadian(45.0f),1280.0f/720.0f,0.1f,1000.0f);
 	//	D3DXMatrixOrthoRH(&Proj, 1280.0f / 720.0f, 1.0f , 0.1, 100.0f);
-	Camara.VP = Camara.View*Camara.Projection;
+	VP = View*Projection;
 }
 
 void TestApp::DestroyAssets() {
@@ -65,8 +65,8 @@ void TestApp::OnUpdate() {
 	DtTimer.Update();
 	Dtsecs = DtTimer.GetDTSecs();
 	OnInput();
-	CamaraActiva->Update(Dtsecs);
-	VP = CamaraActiva->VP;
+	//CamaraActiva->Update(Dtsecs);
+	//VP = CamaraActiva->VP;
 	/*Triangle[0].TranslateAbsolute(Position.x, Position.y, Position.z);
 	Triangle[0].RotateXAbsolute(Orientation.x);
 	Triangle[0].RotateYAbsolute(Orientation.y);
@@ -199,7 +199,7 @@ void TestApp::OnInput() {
 		Orientation.z += 60.0f*vel*Dtsecs;
 		cambio = true;
 	}
-	if (IManager.PressedKey(SDLK_w))
+	/*if (IManager.PressedKey(SDLK_w))
 	{
 		CamaraActiva->MoveForward(Dtsecs);
 	}
@@ -218,7 +218,7 @@ void TestApp::OnInput() {
 	float yaw = 0.005f *static_cast<float>(IManager.Deltax);
 	CamaraActiva->MoveYaw(yaw);
 	float pitch = 0.005f*static_cast<float>(IManager.Deltay);
-	CamaraActiva->MovePitch(pitch);
+	CamaraActiva->MovePitch(pitch);*/
 }
 
 void TestApp::OnPause() {
