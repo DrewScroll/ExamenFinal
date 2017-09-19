@@ -53,7 +53,6 @@ void CMesh::Create(char* t) {
 			if (findMesh != -1)
 			{
 				XMesh = new ContMesh;
-				XMaterial = new Material;
 				myfile >> XMesh->vert >> separator;
 				cout << "vertices: "<< XMesh->vert << endl;
 				XMesh->vertices = new MeshVertex[XMesh->vert];
@@ -94,11 +93,11 @@ void CMesh::Create(char* t) {
 			}
 			if (findMaterialList != -1)
 			{
-				bool test;
 				myfile >> separator >> separator;
 				myfile >> XMesh->mat >> separator;
 				for (int i = 0; i < XMesh->mat; i++)
 				{
+					XMaterial = new Material;
 					myfile >> XMaterial->diffusemap >> separator;
 					materials.push_back(XMaterial);
 				}
@@ -109,6 +108,7 @@ void CMesh::Create(char* t) {
 				myfile >> separator >> str;
 				string str1 = str.substr(0,4);
 				string str2 = str.substr(5, (str.length() - 7));
+				/*materials[0]->diffusepath = str1 + str2;*/
 				for (int i = 0; i < XMesh->mat; i++)
 				{
 					materials[i]->diffusepath = str1 + str2;

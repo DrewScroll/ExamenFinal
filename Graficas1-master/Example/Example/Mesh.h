@@ -26,7 +26,7 @@ struct MeshVertex {
 
 struct Material {
 	GLuint IB;
-	bool diffusemap;
+	int diffusemap;
 	string diffusepath;
 };
 
