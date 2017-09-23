@@ -93,13 +93,24 @@ void CMesh::Create(char* t) {
 			}
 			if (findMaterialList != -1)
 			{
-				myfile >> separator >> separator;
-				myfile >> XMesh->mat >> separator;
-				for (int i = 0; i < XMesh->mat; i++)
+				int ntriangles = 0;
+				int nmaterial = 0;
+				myfile >> XMesh->totalmaterial >> separator;
+				myfile >> ntriangles >> separator;
+				for (int i = 0; i < XMesh->totalmaterial; i++)
 				{
 					XMaterial = new Material;
-					myfile >> XMaterial->diffusemap >> separator;
-					materials.push_back(XMaterial);
+					XMaterial->ind = 0;
+					XMesh->materials.push_back(XMaterial);
+				}
+
+				for (int i = 0; i < ntriangles; i++)
+				{
+					myfile >> nmaterial >> separator;
+					XMesh->materials[nmaterial]->indices.push_back(XMesh->indices[i * 3 + 0]);
+					XMesh->materials[nmaterial]->indices.push_back(XMesh->indices[i * 3 + 1]);
+					XMesh->materials[nmaterial]->indices.push_back(XMesh->indices[i * 3 + 2]);
+					XMesh->materials[nmaterial]->ind++;
 				}
 			}
 			if (findDiffuseMap != -1)
@@ -108,10 +119,9 @@ void CMesh::Create(char* t) {
 				myfile >> separator >> str;
 				string str1 = str.substr(0,4);
 				string str2 = str.substr(5, (str.length() - 7));
-				/*materials[0]->diffusepath = str1 + str2;*/
-				for (int i = 0; i < XMesh->mat; i++)
+				for (int i = 0; i < XMesh->totalmaterial; i++)
 				{
-					materials[i]->diffusepath = str1 + str2;
+					XMesh->materials[i]->diffusepath = str1 + str2;
 				}
 				Meshes.push_back(XMesh);
 			}
@@ -219,6 +229,14 @@ void CMesh::Create(char* t) {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Meshes[i]->IB);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, (Meshes[i]->ind * 3) * sizeof(unsigned short), Meshes[i]->indices, GL_STATIC_DRAW);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		for (int j = 0; j < Meshes[i]->totalmaterial; j++)
+		{
+			glGenBuffers(1, &Meshes[i]->materials[j]->IB);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Meshes[i]->materials[j]->IB);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, (Meshes[i]->materials[j]->ind * 3) * sizeof(unsigned short), &Meshes[i]->materials[j]->indices[0], GL_STATIC_DRAW);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		}
 	}
 	transform = Identity();
 }
@@ -252,7 +270,7 @@ void CMesh::Draw(float *t, float *vp) {
 	for (int i = 0; i < Meshes.size(); i++)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, Meshes[i]->VB);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Meshes[i]->IB);
+	//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Meshes[i]->IB);
 
 		glEnableVertexAttribArray(vertexAttribLoc);
 		glEnableVertexAttribArray(normalAttribLoc);
@@ -266,7 +284,12 @@ void CMesh::Draw(float *t, float *vp) {
 		/*	if (uvAttribLoc != -1)
 		glVertexAttribPointer(uvAttribLoc, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(32));
 		*/
-		glDrawElements(GL_TRIANGLES, Meshes[i]->ind * 3 , GL_UNSIGNED_SHORT, 0);
+		for (int j = 0; j < Meshes[i]->materials.size(); j++)
+		{
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Meshes[i]->materials[0]->IB);
+			//glDrawElements(GL_TRIANGLES, Meshes[i]->ind * 3, GL_UNSIGNED_SHORT, 0);
+			glDrawElements(GL_TRIANGLES, Meshes[i]->materials[0]->ind * 3, GL_UNSIGNED_SHORT, 0);
+		}
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

@@ -28,6 +28,8 @@ struct Material {
 	GLuint IB;
 	int diffusemap;
 	string diffusepath;
+	vector <unsigned short> indices;
+	int ind;
 };
 
 struct ContMesh
@@ -36,7 +38,8 @@ struct ContMesh
 	unsigned short	*indices;
 	GLuint			VB;
 	GLuint			IB;
-	int vert, ind, mat;
+	int vert, ind, totalmaterial;
+	vector <Material*> materials;
 };
 
 class CMesh : public PrimitiveBase {
@@ -58,10 +61,10 @@ public:
 
 	GLint  matWorldViewProjUniformLoc;
 	GLint  matWorldUniformLoc;
-	ContMesh	*XMesh;
+	ContMesh *XMesh;
 	Material *XMaterial;
 	vector <ContMesh*> Meshes;
-	vector <Material*> materials;
+	//vector <Material*> materials;
 
 	/*vector <MeshVertex> vertices;
 	vector <unsigned short>	indices;
