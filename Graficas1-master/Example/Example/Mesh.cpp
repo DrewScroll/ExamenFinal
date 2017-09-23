@@ -117,11 +117,10 @@ void CMesh::Create(char* t) {
 			{
 				string str;
 				myfile >> separator >> str;
-				string str1 = str.substr(0,4);
-				string str2 = str.substr(5, (str.length() - 7));
+				string str1 = str.substr(5, (str.length() - 7));
 				for (int i = 0; i < XMesh->totalmaterial; i++)
 				{
-					XMesh->materials[i]->diffusepath = str1 + str2;
+					XMesh->materials[i]->diffusepath = str1;
 				}
 				Meshes.push_back(XMesh);
 			}
