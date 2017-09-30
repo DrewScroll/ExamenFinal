@@ -26,7 +26,7 @@ struct MeshVertex {
 
 struct Material {
 	GLuint IB;
-	int diffusemap;
+	GLuint diffuse_textID;
 	string diffusepath;
 	vector <unsigned short> indices;
 	int ind;
@@ -53,11 +53,14 @@ public:
 	void Draw(float *t, float *vp);
 	void Destroy();
 
+	int contDiffuse = 0;
+	int totMat = 0;
 
 	GLuint	shaderID;
 	GLint	vertexAttribLoc;
 	GLint	normalAttribLoc;
 	GLint	uvAttribLoc;
+	GLint	DiffuseLoc;
 
 	GLint  matWorldViewProjUniformLoc;
 	GLint  matWorldUniformLoc;

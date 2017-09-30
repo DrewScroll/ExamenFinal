@@ -1,4 +1,6 @@
 #include "Mesh.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 void CMesh::Create(char* t) {
@@ -96,6 +98,7 @@ void CMesh::Create(char* t) {
 				int ntriangles = 0;
 				int nmaterial = 0;
 				myfile >> XMesh->totalmaterial >> separator;
+				totMat = XMesh->totalmaterial;
 				myfile >> ntriangles >> separator;
 				for (int i = 0; i < XMesh->totalmaterial; i++)
 				{
@@ -112,17 +115,35 @@ void CMesh::Create(char* t) {
 					XMesh->materials[nmaterial]->indices.push_back(XMesh->indices[i * 3 + 2]);
 					XMesh->materials[nmaterial]->ind++;
 				}
+				contDiffuse = 0;
 			}
 			if (findDiffuseMap != -1)
 			{
-				string str;
-				myfile >> separator >> str;
-				string str1 = str.substr(5, (str.length() - 7));
-				for (int i = 0; i < XMesh->totalmaterial; i++)
+				myfile >> XMesh->materials[contDiffuse]->diffusepath;
+				XMesh->materials[contDiffuse]->diffusepath = XMesh->materials[contDiffuse]->diffusepath.substr(1, XMesh->materials[contDiffuse]->diffusepath.size() - 3);
+				cout << XMesh->materials[contDiffuse]->diffusepath;
+				contDiffuse++;
+				if (contDiffuse == totMat)
 				{
-					XMesh->materials[i]->diffusepath = str1;
+					contDiffuse = 0;
+					while (contDiffuse < XMesh->totalmaterial)
+					{
+						int x = 0, y = 0, channels = 0;
+						string path = "Textures/";
+						path += XMesh->materials[contDiffuse]->diffusepath;
+						unsigned char *buffer = stbi_load(path.c_str(), &x, &y, &channels, 0);
+
+						glGenTextures(1, &XMesh->materials[contDiffuse]->diffuse_textID);
+						glBindTexture(GL_TEXTURE_2D, XMesh->materials[contDiffuse]->diffuse_textID);
+
+						glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+						glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void*)(buffer));
+						glGenerateMipmap(GL_TEXTURE_2D);
+						++contDiffuse;
+					}
+					contDiffuse = 0;
+					Meshes.push_back(XMesh);
 				}
-				Meshes.push_back(XMesh);
 			}
 			//cout << currentline << '\n';
 		}
@@ -285,9 +306,15 @@ void CMesh::Draw(float *t, float *vp) {
 		*/
 		for (int j = 0; j < Meshes[i]->materials.size(); j++)
 		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Meshes[i]->materials[0]->IB);
+			if (DiffuseLoc != -1)
+			{
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, Meshes[i]->materials[j]->diffuse_textID);
+				glUniform1i(DiffuseLoc, 0);
+			}
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Meshes[i]->materials[j]->IB);
 			//glDrawElements(GL_TRIANGLES, Meshes[i]->ind * 3, GL_UNSIGNED_SHORT, 0);
-			glDrawElements(GL_TRIANGLES, Meshes[i]->materials[0]->ind * 3, GL_UNSIGNED_SHORT, 0);
+			glDrawElements(GL_TRIANGLES, Meshes[i]->materials[j]->ind * 3, GL_UNSIGNED_SHORT, 0);
 		}
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
