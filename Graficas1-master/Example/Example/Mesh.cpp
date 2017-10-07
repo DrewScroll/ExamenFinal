@@ -21,6 +21,7 @@ void CMesh::Create(char* t) {
 	vertexAttribLoc = glGetAttribLocation(shaderID, "Vertex");
 	normalAttribLoc = glGetAttribLocation(shaderID, "Normal");
 	uvAttribLoc = glGetAttribLocation(shaderID, "UV");
+	diffuseAttribLoc = glGetAttribLocation(shaderID, "Diffuse");
 
 	matWorldViewProjUniformLoc = glGetUniformLocation(shaderID, "WVP");
 	matWorldUniformLoc = glGetUniformLocation(shaderID, "World");
@@ -123,27 +124,27 @@ void CMesh::Create(char* t) {
 				XMesh->materials[contDiffuse]->diffusepath = XMesh->materials[contDiffuse]->diffusepath.substr(1, XMesh->materials[contDiffuse]->diffusepath.size() - 3);
 				cout << XMesh->materials[contDiffuse]->diffusepath;
 				contDiffuse++;
-				if (contDiffuse == totMat)
+			}
+			if (contDiffuse == totMat)
+			{
+				contDiffuse = 0;
+				while (contDiffuse < XMesh->totalmaterial)
 				{
-					contDiffuse = 0;
-					while (contDiffuse < XMesh->totalmaterial)
-					{
-						int x = 0, y = 0, channels = 0;
-						string path = "Textures/";
-						path += XMesh->materials[contDiffuse]->diffusepath;
-						unsigned char *buffer = stbi_load(path.c_str(), &x, &y, &channels, 0);
+					int x = 0, y = 0, channels = 0;
+					string path = "Textures/";
+					path += XMesh->materials[contDiffuse]->diffusepath;
+					unsigned char *buffer = stbi_load(path.c_str(), &x, &y, &channels, 0);
 
-						glGenTextures(1, &XMesh->materials[contDiffuse]->diffuse_textID);
-						glBindTexture(GL_TEXTURE_2D, XMesh->materials[contDiffuse]->diffuse_textID);
+					glGenTextures(1, &XMesh->materials[contDiffuse]->diffuse_textID);
+					glBindTexture(GL_TEXTURE_2D, XMesh->materials[contDiffuse]->diffuse_textID);
 
-						glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-						glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void*)(buffer));
-						glGenerateMipmap(GL_TEXTURE_2D);
-						++contDiffuse;
-					}
-					contDiffuse = 0;
-					Meshes.push_back(XMesh);
+					glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void*)(buffer));
+					glGenerateMipmap(GL_TEXTURE_2D);
+					++contDiffuse;
 				}
+				contDiffuse = 0;
+				Meshes.push_back(XMesh);
 			}
 			//cout << currentline << '\n';
 		}
@@ -306,11 +307,11 @@ void CMesh::Draw(float *t, float *vp) {
 		*/
 		for (int j = 0; j < Meshes[i]->materials.size(); j++)
 		{
-			if (DiffuseLoc != -1)
+			if (diffuseAttribLoc != -1)
 			{
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, Meshes[i]->materials[j]->diffuse_textID);
-				glUniform1i(DiffuseLoc, 0);
+				glUniform1i(diffuseAttribLoc, 0);
 			}
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Meshes[i]->materials[j]->IB);
 			//glDrawElements(GL_TRIANGLES, Meshes[i]->ind * 3, GL_UNSIGNED_SHORT, 0);

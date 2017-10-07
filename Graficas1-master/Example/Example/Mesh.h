@@ -54,13 +54,13 @@ public:
 	void Destroy();
 
 	int contDiffuse = 0;
-	int totMat = 0;
+	int totMat=-1;
 
 	GLuint	shaderID;
 	GLint	vertexAttribLoc;
 	GLint	normalAttribLoc;
 	GLint	uvAttribLoc;
-	GLint	DiffuseLoc;
+	GLint	diffuseAttribLoc;
 
 	GLint  matWorldViewProjUniformLoc;
 	GLint  matWorldUniformLoc;
