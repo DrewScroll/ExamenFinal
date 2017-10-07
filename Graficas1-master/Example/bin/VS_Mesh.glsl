@@ -1,7 +1,6 @@
 attribute highp vec4 Vertex;
 attribute highp vec4 Normal;
 attribute highp vec2 UV;
-attribute highp vec4 Diffuse;
 
 varying highp vec3 vecTransformed;
 varying highp vec2 vecUVCoords;

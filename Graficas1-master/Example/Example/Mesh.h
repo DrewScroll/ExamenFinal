@@ -39,7 +39,7 @@ struct ContMesh
 	GLuint			VB;
 	GLuint			IB;
 	int vert, ind, totalmaterial;
-	vector <Material*> materials;
+	vector <Material*> materials; 
 };
 
 class CMesh : public PrimitiveBase {

@@ -21,8 +21,8 @@ void CMesh::Create(char* t) {
 	vertexAttribLoc = glGetAttribLocation(shaderID, "Vertex");
 	normalAttribLoc = glGetAttribLocation(shaderID, "Normal");
 	uvAttribLoc = glGetAttribLocation(shaderID, "UV");
-	diffuseAttribLoc = glGetAttribLocation(shaderID, "Diffuse");
 
+	diffuseAttribLoc = glGetUniformLocation(shaderID, "Diffuse");
 	matWorldViewProjUniformLoc = glGetUniformLocation(shaderID, "WVP");
 	matWorldUniformLoc = glGetUniformLocation(shaderID, "World");
 
@@ -294,17 +294,22 @@ void CMesh::Draw(float *t, float *vp) {
 	//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Meshes[i]->IB);
 
 		glEnableVertexAttribArray(vertexAttribLoc);
-		glEnableVertexAttribArray(normalAttribLoc);
+		//glEnableVertexAttribArray(normalAttribLoc);
 
 		if (uvAttribLoc != -1)
 			glEnableVertexAttribArray(uvAttribLoc);
 
+		if (normalAttribLoc != -1)
+		{
+			glEnableVertexAttribArray(normalAttribLoc);
+		}
+
 		glVertexAttribPointer(vertexAttribLoc, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(0));
 		glVertexAttribPointer(normalAttribLoc, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(16));
 
-		/*	if (uvAttribLoc != -1)
-		glVertexAttribPointer(uvAttribLoc, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(32));
-		*/
+		if (uvAttribLoc != -1)
+			glVertexAttribPointer(uvAttribLoc, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), BUFFER_OFFSET(32));
+		
 		for (int j = 0; j < Meshes[i]->materials.size(); j++)
 		{
 			if (diffuseAttribLoc != -1)
@@ -322,11 +327,15 @@ void CMesh::Draw(float *t, float *vp) {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 		glDisableVertexAttribArray(vertexAttribLoc);
-		glDisableVertexAttribArray(normalAttribLoc);
+		/*glDisableVertexAttribArray(normalAttribLoc);
 
-		/*if (uvAttribLoc != -1) {
+		if (uvAttribLoc != -1) {
 		glDisableVertexAttribArray(uvAttribLoc);
 		}*/
+		if (normalAttribLoc != -1)
+		{
+			glDisableVertexAttribArray(normalAttribLoc);
+		}
 	}
 	glUseProgram(0);
 }
