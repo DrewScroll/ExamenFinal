@@ -63,6 +63,12 @@ VECTOR4D operator*(VECTOR4D& A, float s)
 	return R;
 }
 
+VECTOR4D operator-=(VECTOR4D & A, VECTOR4D & B)
+{
+	VECTOR4D R = { A.x - B.x, A.y - B.y, A.z - B.z, A.w - B.w };
+	return R;
+}
+
 float Dot(VECTOR4D & A, VECTOR4D & B)
 {
 	return  A.x*B.x + A.y*B.y + A.z*B.z + A.w*B.w;
@@ -422,6 +428,16 @@ VECTOR4D TransformNormalRH(const VECTOR4D &v, const MATRIX4D &mat) {
 	vpout.z = v.x*mat.m[2][0] + v.y*mat.m[2][1] + v.z*mat.m[2][2];
 	vpout.w = 1.0f;
 	return vpout;
+}
+
+MATRIX4D MatTranslation(VECTOR4D & v)
+{
+	MATRIX4D M;
+	M.m[3][0] = v.x;
+	M.m[3][1] = v.y;
+	M.m[3][2] = v.z;
+	M.m[3][3] = 1.0f;
+	return M;
 }
 
 //MATRIX4D &MATRIX4D::operator=(float * t)

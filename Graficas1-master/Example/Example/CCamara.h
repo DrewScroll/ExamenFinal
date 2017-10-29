@@ -1,72 +1,48 @@
-#ifndef T800_CAMERA_H
-#define T800_CAMERA_H
+#pragma once
+#include "MATRIX4D.h"
 
-#include "Matrix4D.h"
-#include <math.h>
-
-class CCamara {
+class CCamara
+{
 public:
 	CCamara();
+	~CCamara();
 
-	void	Init(VECTOR4D position, float fov, float ratio, float np, float fp, bool lf = true);
-	void	CreatePojection();
+	void Init(VECTOR4D Pos, float FOV, float Ratio, float NP, float FP, bool LF = true);
+	void CreateProjection();
+	void SetLookAt(VECTOR4D v);
+	void MoveFront(float DT);
+	void MoveBack(float DT);
+	void MoveLeft(float DT);
+	void MoveRight(float DT);
 
-	void	SetLookAt(VECTOR4D v);
+	void MoveYaw(float f);
+	void MovePitch(float f);
+	void MoveRoll(float f);
 
-	void	MoveForward(float dt);
-	void	MoveBackward(float dt);
-	void	StrafeLeft(float dt);
-	void	StrafeRight(float dt);
+	void SetFov(float f);
+	void SetRatio(float f);
+	void SetPlanes(float near, float far);
 
-	void	MoveYaw(float f);
-	void	MovePitch(float f);
-	void	MoveRoll(float f);
+	void Update(float DT);
+	void Reset();
 
-	void	Update(float dt);
-	void	Reset();
+	VECTOR4D Eye, Look, Right, Up;
 
-	void	SetFov(float f);
-	void	SetRatio(float r);
-	void	SetPlanes(float n, float f);
+	VECTOR4D Velocity;
 
-	float		Fov;
-	float		AspectRatio;
-	float		NPlane;
-	float		FPlane;
+	float FOV, AR, NearPlane, FarPlane;
 
-	float		Yaw;
-	float		Pitch;
-	float		Roll;
+	float Yaw, Pitch, Roll, MaxYaw, MaxPitch, MaxRoll;
 
-	float		MaxRoll;
-	float		MaxPitch;
-	float		MaxYaw;
+	float Speed, Friction;
 
-	float		Speed;
-	float		Friction;
+	bool LeftHanded;
 
-	bool		LeftHanded;
+	MATRIX4D Position, RotateX, RotateY, RotateZ;
 
-	VECTOR4D	Eye;
-	VECTOR4D	Look;
-	VECTOR4D	Right;
-	VECTOR4D	Up;
+	MATRIX4D View, Projection, VP;
 
-	VECTOR4D	Velocity;
-
-	MATRIX4D	Position;
-	MATRIX4D	RotX;
-	MATRIX4D	RotY;
-	MATRIX4D	RotZ;
-
-	MATRIX4D	View;
-	MATRIX4D	Projection;
-	MATRIX4D	VP;
-
-	static const	VECTOR4D	LookConstCameraSpace;
-	static const	VECTOR4D	RightConstCameraSpace;
-	static const	VECTOR4D	UpConstCameraSpace;
+	static const VECTOR4D LookConstCameraSpace;
+	static const VECTOR4D RIghtConstCameraSPace;
+	static const VECTOR4D UpConstCameraSpace;
 };
-
-
-#endif

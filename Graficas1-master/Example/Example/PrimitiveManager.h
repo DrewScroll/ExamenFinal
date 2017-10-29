@@ -18,6 +18,8 @@ public:
 	int	 CreateCube();
 	int CreateMesh(char* t);
 
+	void SetSceneProps(CScene *S);
+
 	void DrawPrimitives();
 	void DestroyPrimitives();
 	PrimitiveBase*	GetPrimitive(unsigned int);

@@ -1,6 +1,8 @@
 #include "Application.h"
 #include <iostream>
 
+#define LIGHT_COUNT	1
+
 using namespace std;
 
 #define M_PI 3.141592654
@@ -15,15 +17,34 @@ void TestApp::InitVars() {
 	Position = { 0,0,0,0 };
 	Orientation = { 0,0,0,0 };
 	Scaling = { 1,1,1,0 };
-	/*Camara.Init(VECTOR4D{ 0.0f,1.0f,10.0f,0.0f }, 45 * (M_PI / 180), 1280.0f / 720.0f, 1.0f, 8000.0f);
+	Camara.Init(VECTOR4D{ 0.0f,1.0f,10.0f,0.0f }, 45 * (M_PI / 180), 1280.0f / 720.0f, 1.0f, 8000.0f);
 	Camara.Speed = 10.0f;
 	Camara.Eye = VECTOR4D{ 0.0f, 9.75f, -31.0f, 0.0f };
 	Camara.Pitch = 0.14f;
 	Camara.Roll = 0.0f;
 	Camara.Yaw = 0.020f;
 	Camara.Update(0.0f);
+	
+	LuzCamara.Init(VECTOR4D{ 0.0f,1.0f,10.0f,0.0f }, 60.0f*(M_PI / 180), 1.0f, 0.1f, 8000.0f, false);
+	LuzCamara.Speed = 10.0f;
+	LuzCamara.Eye = VECTOR4D{ 0.0f, 25.0f, -40.0f, 0.0f };
+	LuzCamara.Pitch = 0.14f;
+	LuzCamara.Roll = 0.0f;
+	LuzCamara.Yaw = 0.020f;
+	LuzCamara.Update(0.0f);
 
-	CamaraActiva = &Camara;*/
+	CamaraActiva = &Camara;
+	Scene.CreateCamera(CamaraActiva);
+	Scene.CreateCamera(CamaraActiva);
+	Scene.AmbientClr = { .5f, .5f, .5f, 1.0f };
+	Scene.CreateLightCamera(&LuzCamara);
+	for (int i = 0; i < LIGHT_COUNT; i++)
+	{
+		float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+		float g = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+		float b = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+		Scene.CreateLight({ 5.f, 0.0f, 0.0f, 1.0f }, { 0.0f, 255.0f, 255.0f, 1.0f }, true);
+	}
 	FirstFrame = true;
 }
 
@@ -65,8 +86,9 @@ void TestApp::OnUpdate() {
 	DtTimer.Update();
 	Dtsecs = DtTimer.GetDTSecs();
 	OnInput();
-	//CamaraActiva->Update(Dtsecs);
-	//VP = CamaraActiva->VP;
+	CamaraActiva->Update(Dtsecs);
+	VP = CamaraActiva->VP;
+
 	/*Triangle[0].TranslateAbsolute(Position.x, Position.y, Position.z);
 	Triangle[0].RotateXAbsolute(Orientation.x);
 	Triangle[0].RotateYAbsolute(Orientation.y);
@@ -80,17 +102,15 @@ void TestApp::OnUpdate() {
 	Mesh[0].RotateZAbsolute(Orientation.z);
 	Mesh[0].ScaleAbsolute(Scaling.x);
 	Mesh[0].Update();
-
 	
-
-	/*
 	Cubes[0].TranslateAbsolute(Position.x, Position.y, Position.z);
 	Cubes[0].RotateXAbsolute(Orientation.x);
 	Cubes[0].RotateYAbsolute(Orientation.y);
 	Cubes[0].RotateZAbsolute(Orientation.z);
 	Cubes[0].ScaleAbsolute(Scaling.x);
+	Cubes[0].TranslateRelative(-Scene.LightContainer[0].Position.x, -Scene.LightContainer[0].Position.y, -Scene.LightContainer[0].Position.z);
 	Cubes[0].Update();
-
+	/*
 	Cubes[1].TranslateAbsolute(-Position.x,-Position.y, Position.z);
 	Cubes[1].RotateXAbsolute(-Orientation.x);
 	Cubes[1].RotateYAbsolute(-Orientation.y);
@@ -129,33 +149,27 @@ void TestApp::OnInput() {
 	bool cambio = false;
 	const float vel = 10.0f;
 	if (IManager.PressedKey(SDLK_UP)) {
-		Position.y += 1.0f*vel*Dtsecs;
-		cambio = true;
+		Scene.LightContainer[0].Position.y -= 10.0f * DtTimer.GetDTSecs();
 	}
 
 	if (IManager.PressedKey(SDLK_DOWN)) {
-		Position.y -= 1.0f*vel*Dtsecs;
-		cambio = true;
+		Scene.LightContainer[0].Position.y += 10.0f * DtTimer.GetDTSecs();
 	}
 
 	if (IManager.PressedKey(SDLK_LEFT)) {
-		Position.x -= 1.0f*vel*Dtsecs;
-		cambio = true;
+		Scene.LightContainer[0].Position.x -= 10.0f * DtTimer.GetDTSecs();
 	}
 
 	if (IManager.PressedKey(SDLK_RIGHT)) {
-		Position.x += 1.0f*vel*Dtsecs;
-		cambio = true;
+		Scene.LightContainer[0].Position.x += 10.0f * DtTimer.GetDTSecs();
 	}
 
 	if (IManager.PressedKey(SDLK_z)) {
-		Position.z -= 1.0f*vel*Dtsecs;
-		cambio = true;
+		Scene.LightContainer[0].Position.z += 10.0f * DtTimer.GetDTSecs();
 	}
 
 	if (IManager.PressedKey(SDLK_x)) {
-		Position.z += 1.0f*vel*Dtsecs;
-		cambio = true;
+		Scene.LightContainer[0].Position.z -= 10.0f * DtTimer.GetDTSecs();		
 	}
 
 	if (IManager.PressedKey(SDLK_KP_PLUS)) {
@@ -199,26 +213,26 @@ void TestApp::OnInput() {
 		Orientation.z += 60.0f*vel*Dtsecs;
 		cambio = true;
 	}
-	/*if (IManager.PressedKey(SDLK_w))
+	if (IManager.PressedKey(SDLK_w))
 	{
-		CamaraActiva->MoveForward(Dtsecs);
+		CamaraActiva->MoveFront(Dtsecs);
 	}
 	if (IManager.PressedKey(SDLK_s))
 	{
-		CamaraActiva->MoveBackward(Dtsecs);
+		CamaraActiva->MoveBack(Dtsecs);
 	}
 	if (IManager.PressedKey(SDLK_a))
 	{
-		CamaraActiva->StrafeLeft(Dtsecs);
+		CamaraActiva->MoveLeft(Dtsecs);
 	}
 	if (IManager.PressedKey(SDLK_d))
 	{
-		CamaraActiva->StrafeRight(Dtsecs);
+		CamaraActiva->MoveRight(Dtsecs);
 	}
 	float yaw = 0.005f *static_cast<float>(IManager.Deltax);
 	CamaraActiva->MoveYaw(yaw);
 	float pitch = 0.005f*static_cast<float>(IManager.Deltay);
-	CamaraActiva->MovePitch(pitch);*/
+	CamaraActiva->MovePitch(pitch);
 }
 
 void TestApp::OnPause() {

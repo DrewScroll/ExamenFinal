@@ -21,8 +21,10 @@
   <ItemGroup>
     <ClInclude Include="BaseDriver.h" />
     <ClInclude Include="CCamara.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="CubeGL.h" />
+    <ClInclude Include="CScene.h" />
     <ClInclude Include="GLDriver.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Matrix4D.h" />
@@ -39,6 +41,7 @@
     <ClCompile Include="CCamara.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="CubeGL.cpp" />
+    <ClCompile Include="CScene.cpp" />
     <ClCompile Include="GLDriver.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Matrix4D.cpp" />
